@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-void writeEEPROM(uint16_t direccion, uint8_t dato);
+void writeEEPROM(uint16_t direccion, uint8_t dato);	//Funciones prototipo
 uint8_t readEEPROM(uint16_t direccion);
 
 

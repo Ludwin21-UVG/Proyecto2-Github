@@ -4,15 +4,15 @@
 #include "ADC_Proyecto2.h"
 
 volatile uint8_t Config_Mask_ADC = 0;
-volatile uint8_t CanalADC    = 0;
-volatile uint8_t LecturaADC0 = 0;
-volatile uint8_t LecturaADC1 = 0;
-volatile uint8_t LecturaADC2 = 0;
-volatile uint8_t LecturaADC3 = 0;
-volatile uint8_t LecturaADC4 = 0;
-volatile uint8_t LecturaADC5 = 0;
-volatile uint8_t LecturaADC6 = 0;
-volatile uint8_t LecturaADC7 = 0;
+volatile uint8_t CanalADC		 = 0;
+volatile uint8_t LecturaADC0	 = 0;
+volatile uint8_t LecturaADC1	 = 0;
+volatile uint8_t LecturaADC2	 = 0;
+volatile uint8_t LecturaADC3	 = 0;
+volatile uint8_t LecturaADC4	 = 0;
+volatile uint8_t LecturaADC5	 = 0;
+volatile uint8_t LecturaADC6	 = 0;
+volatile uint8_t LecturaADC7	 = 0;
 
 void initADC(uint8_t Referencia, uint8_t Justificacion, uint8_t Prescaler){
 	ADMUX  = 0;

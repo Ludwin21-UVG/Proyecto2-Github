@@ -485,7 +485,7 @@ void setup(){
  2fa:	80 e0       	ldi	r24, 0x00	; 0
  2fc:	0e 94 d1 04 	call	0x9a2	; 0x9a2 <initPWM2B>
 	//Configurar Output
-	DDRD  |=   (1<<DDD6) | (1<<DDD5) | (1<<DDD4);  //Salidas
+	DDRD  |=   (1<<DDD6) | (1<<DDD5) | (1<<DDD4);  //Salidas LED´s
  300:	8a b1       	in	r24, 0x0a	; 10
  302:	80 67       	ori	r24, 0x70	; 112
  304:	8a b9       	out	0x0a, r24	; 10
@@ -494,7 +494,7 @@ void setup(){
  308:	8f 78       	andi	r24, 0x8F	; 143
  30a:	8b b9       	out	0x0b, r24	; 11
 	//Configurar Input
-	DDRC  &= ~(1<<DDC0);
+	DDRC  &= ~(1<<DDC0);	//Botón en PC0
  30c:	87 b1       	in	r24, 0x07	; 7
  30e:	8e 7f       	andi	r24, 0xFE	; 254
  310:	87 b9       	out	0x07, r24	; 7
@@ -506,12 +506,12 @@ void setup(){
 	initPinchage();
  318:	0e 94 48 01 	call	0x290	; 0x290 <initPinchage>
 	//EEPROM inicial
-    eeprom_cantidad  = readEEPROM(0x00);
+    eeprom_cantidad  = readEEPROM(0x00);		   //Leer datos guardados en EEPROM
  31c:	80 e0       	ldi	r24, 0x00	; 0
  31e:	90 e0       	ldi	r25, 0x00	; 0
  320:	0e 94 3f 01 	call	0x27e	; 0x27e <readEEPROM>
  324:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <eeprom_cantidad>
-    eeprom_write_idx = readEEPROM(0x01);
+    eeprom_write_idx = readEEPROM(0x01);		   //Cantidad, índice de escritura e índice de lectura
  328:	81 e0       	ldi	r24, 0x01	; 1
  32a:	90 e0       	ldi	r25, 0x00	; 0
  32c:	0e 94 3f 01 	call	0x27e	; 0x27e <readEEPROM>
@@ -521,7 +521,7 @@ void setup(){
  336:	90 e0       	ldi	r25, 0x00	; 0
  338:	0e 94 3f 01 	call	0x27e	; 0x27e <readEEPROM>
  33c:	80 93 12 01 	sts	0x0112, r24	; 0x800112 <eeprom_read_idx>
-    //Por seguridad para el primer uso de EEPROM
+    //Por seguridad, reiniciar variables si contienen valores inválidos
     if(eeprom_cantidad > 4)  eeprom_cantidad  = 0;
  340:	90 91 14 01 	lds	r25, 0x0114	; 0x800114 <eeprom_cantidad>
  344:	95 30       	cpi	r25, 0x05	; 5
@@ -544,7 +544,7 @@ void setup(){
 }
 
 uint16_t mapServo1(uint8_t ADC_to_PWM){
-	return  75 + ((uint32_t)ADC_to_PWM * 225 / 255);//0-180 grados
+	return  75 + ((uint32_t)ADC_to_PWM * 225 / 255);						 //0-180 grados
  362:	28 2f       	mov	r18, r24
  364:	30 e0       	ldi	r19, 0x00	; 0
  366:	a1 ee       	ldi	r26, 0xE1	; 225
@@ -564,7 +564,7 @@ uint16_t mapServo1(uint8_t ADC_to_PWM){
 00000382 <mapServo2>:
 
 uint16_t mapServo2(uint8_t ADC_to_PWM){
-	return  120 + ((uint32_t)ADC_to_PWM * 180 / 255);//95-180 grados
+	return  120 + ((uint32_t)ADC_to_PWM * 180 / 255);						 //95-180 grados
  382:	28 2f       	mov	r18, r24
  384:	30 e0       	ldi	r19, 0x00	; 0
  386:	a4 eb       	ldi	r26, 0xB4	; 180
@@ -626,7 +626,7 @@ uint16_t mapServo4(uint8_t ADC_to_PWM){
  3ec:	df 92       	push	r13
  3ee:	ef 92       	push	r14
  3f0:	ff 92       	push	r15
-	return ((uint32_t)(74 + ((uint32_t)ADC_to_PWM * 53) / 255) * 75) / 255;//52-85 grados
+	return ((uint32_t)(74 + ((uint32_t)ADC_to_PWM * 53) / 255) * 75) / 255;	 //52-85 grados
  3f2:	28 2f       	mov	r18, r24
  3f4:	30 e0       	ldi	r19, 0x00	; 0
  3f6:	a5 e3       	ldi	r26, 0x35	; 53
@@ -662,24 +662,24 @@ uint16_t mapServo4(uint8_t ADC_to_PWM){
 
 void ProcesarUART(){
  432:	cf 93       	push	r28
-	if(!datoListo) return;
+	if(!datoListo) return; //Verificar si hay algún dato recibido
  434:	80 91 18 01 	lds	r24, 0x0118	; 0x800118 <datoListo>
  438:	88 23       	and	r24, r24
  43a:	09 f4       	brne	.+2      	; 0x43e <ProcesarUART+0xc>
  43c:	50 c0       	rjmp	.+160    	; 0x4de <ProcesarUART+0xac>
-	datoListo = 0;
+	datoListo = 0;		   //Limpiar bandera
  43e:	10 92 18 01 	sts	0x0118, r1	; 0x800118 <datoListo>
 
 	// Botones: B1:000, B2:000, B2:001, B3:000
-	if(bufferUART[0] == 'B'){
+	if(bufferUART[0] == 'B'){					  //Verificar si el comando es de botones
  442:	80 91 1b 01 	lds	r24, 0x011B	; 0x80011b <bufferUART>
  446:	82 34       	cpi	r24, 0x42	; 66
  448:	09 f0       	breq	.+2      	; 0x44c <ProcesarUART+0x1a>
  44a:	42 c0       	rjmp	.+132    	; 0x4d0 <ProcesarUART+0x9e>
-		uint8_t btn = bufferUART[1] - '0';
+		uint8_t btn = bufferUART[1] - '0';		  //Obtener número de botón recibido
  44c:	c0 91 1c 01 	lds	r28, 0x011C	; 0x80011c <bufferUART+0x1>
  450:	c0 53       	subi	r28, 0x30	; 48
-		uint8_t val = atoi((char*)&bufferUART[3]);
+		uint8_t val = atoi((char*)&bufferUART[3]);//Obtener valor enviado desde UART
  452:	8e e1       	ldi	r24, 0x1E	; 30
  454:	91 e0       	ldi	r25, 0x01	; 1
  456:	0e 94 ed 05 	call	0xbda	; 0xbda <atoi>
@@ -698,7 +698,7 @@ void ProcesarUART(){
  46a:	8b b1       	in	r24, 0x0b	; 11
  46c:	8f 7d       	andi	r24, 0xDF	; 223
  46e:	8b b9       	out	0x0b, r24	; 11
-			PORTD &= ~(1<<PORTD6);  // Demás leds apagados
+			PORTD &= ~(1<<PORTD6);
  470:	8b b1       	in	r24, 0x0b	; 11
  472:	8f 7b       	andi	r24, 0xBF	; 191
  474:	8b b9       	out	0x0b, r24	; 11
@@ -712,26 +712,26 @@ void ProcesarUART(){
 			estado = 2;
  480:	82 e0       	ldi	r24, 0x02	; 2
  482:	80 93 16 01 	sts	0x0116, r24	; 0x800116 <estado>
-			PORTD |=  (1<<PORTD5);	//Led indicador físico de modo
+			PORTD |=  (1<<PORTD5);	   //Led indicador físico de modo
  486:	8b b1       	in	r24, 0x0b	; 11
  488:	80 62       	ori	r24, 0x20	; 32
  48a:	8b b9       	out	0x0b, r24	; 11
-			PORTD &= ~(1<<PORTD4);  // Demás leds apagados
+			PORTD &= ~(1<<PORTD4);	   // Demás leds apagados
  48c:	8b b1       	in	r24, 0x0b	; 11
  48e:	8f 7e       	andi	r24, 0xEF	; 239
  490:	8b b9       	out	0x0b, r24	; 11
-			PORTD &= ~(1<<PORTD6);  // Demás leds apagados
+			PORTD &= ~(1<<PORTD6);
  492:	8b b1       	in	r24, 0x0b	; 11
  494:	8f 7b       	andi	r24, 0xBF	; 191
  496:	8b b9       	out	0x0b, r24	; 11
  498:	22 c0       	rjmp	.+68     	; 0x4de <ProcesarUART+0xac>
 		}
-		else if(btn == 2 && val == 1){
+		else if(btn == 2 && val == 1){//Si el comando del botón es igual a 2 y su valor es 1
  49a:	c2 30       	cpi	r28, 0x02	; 2
  49c:	51 f4       	brne	.+20     	; 0x4b2 <ProcesarUART+0x80>
  49e:	81 30       	cpi	r24, 0x01	; 1
  4a0:	41 f4       	brne	.+16     	; 0x4b2 <ProcesarUART+0x80>
-			if(estado == 2){
+			if(estado == 2){		  //Solo se cumple si anteriormente 
  4a2:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <estado>
  4a6:	82 30       	cpi	r24, 0x02	; 2
  4a8:	d1 f4       	brne	.+52     	; 0x4de <ProcesarUART+0xac>
@@ -755,7 +755,7 @@ void ProcesarUART(){
  4c2:	8b b1       	in	r24, 0x0b	; 11
  4c4:	8f 7e       	andi	r24, 0xEF	; 239
  4c6:	8b b9       	out	0x0b, r24	; 11
-			PORTD &= ~(1<<PORTD5);  // Demás leds apagados
+			PORTD &= ~(1<<PORTD5);
  4c8:	8b b1       	in	r24, 0x0b	; 11
  4ca:	8f 7d       	andi	r24, 0xDF	; 223
  4cc:	8b b9       	out	0x0b, r24	; 11
@@ -763,11 +763,11 @@ void ProcesarUART(){
 		}
 	}
 	// Servos
-	else if(bufferUART[0] == 'S'){
+	else if(bufferUART[0] == 'S'){//Verificar si el comando corresponde a servos
  4d0:	80 91 1b 01 	lds	r24, 0x011B	; 0x80011b <bufferUART>
  4d4:	83 35       	cpi	r24, 0x53	; 83
  4d6:	19 f4       	brne	.+6      	; 0x4de <ProcesarUART+0xac>
-		servoListo = 1;
+		servoListo = 1;			  //Activar bandera
  4d8:	81 e0       	ldi	r24, 0x01	; 1
  4da:	80 93 17 01 	sts	0x0117, r24	; 0x800117 <servoListo>
 	}
@@ -823,7 +823,7 @@ void ModoEEPROM(){
  52c:	1f 93       	push	r17
  52e:	cf 93       	push	r28
  530:	df 93       	push	r29
-	if(estado == 2 && reproducirEEPROM){
+	if(estado == 2 && reproducirEEPROM){			 //Ejecutar solo en modo EEPROM y cuando se solicite reproducción
  532:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <estado>
  536:	82 30       	cpi	r24, 0x02	; 2
  538:	09 f0       	breq	.+2      	; 0x53c <ModoEEPROM+0x14>
@@ -832,15 +832,15 @@ void ModoEEPROM(){
  540:	88 23       	and	r24, r24
  542:	09 f4       	brne	.+2      	; 0x546 <ModoEEPROM+0x1e>
  544:	53 c0       	rjmp	.+166    	; 0x5ec <ModoEEPROM+0xc4>
-		reproducirEEPROM = 0;
+		reproducirEEPROM = 0;						 //Limpiar bandera
  546:	10 92 15 01 	sts	0x0115, r1	; 0x800115 <reproducirEEPROM>
-		if(eeprom_cantidad == 0) return;  // nada guardado
+		if(eeprom_cantidad == 0) return;			 //Verificar si existen posiciones guardadas
  54a:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <eeprom_cantidad>
  54e:	88 23       	and	r24, r24
  550:	09 f4       	brne	.+2      	; 0x554 <ModoEEPROM+0x2c>
  552:	4c c0       	rjmp	.+152    	; 0x5ec <ModoEEPROM+0xc4>
 
-		uint16_t base = 0x10 + (eeprom_read_idx * 4);
+		uint16_t base = 0x10 + (eeprom_read_idx * 4);//Calcular dirección base en EEPROM
  554:	c0 91 12 01 	lds	r28, 0x0112	; 0x800112 <eeprom_read_idx>
  558:	d0 e0       	ldi	r29, 0x00	; 0
  55a:	24 96       	adiw	r28, 0x04	; 4
@@ -848,7 +848,7 @@ void ModoEEPROM(){
  55e:	dd 1f       	adc	r29, r29
  560:	cc 0f       	add	r28, r28
  562:	dd 1f       	adc	r29, r29
-		uint8_t adc1 = readEEPROM(base + 0);
+		uint8_t adc1 = readEEPROM(base + 0);		 //Leer valores ADC guardados para cada servo
  564:	ce 01       	movw	r24, r28
  566:	0e 94 3f 01 	call	0x27e	; 0x27e <readEEPROM>
  56a:	f8 2e       	mov	r15, r24
@@ -868,7 +868,7 @@ void ModoEEPROM(){
  584:	0e 94 3f 01 	call	0x27e	; 0x27e <readEEPROM>
  588:	c8 2f       	mov	r28, r24
 
-		updateDutyCiclePWM1A(mapServo1(adc1));
+		updateDutyCiclePWM1A(mapServo1(adc1));		 //Actualizar posiciones PWM de los 4 servos
  58a:	8f 2d       	mov	r24, r15
  58c:	0e 94 b1 01 	call	0x362	; 0x362 <mapServo1>
  590:	0e 94 54 04 	call	0x8a8	; 0x8a8 <updateDutyCiclePWM1A>
@@ -885,8 +885,7 @@ void ModoEEPROM(){
  5aa:	0e 94 f5 01 	call	0x3ea	; 0x3ea <mapServo4>
  5ae:	0e 94 e7 04 	call	0x9ce	; 0x9ce <updateDutyCiclePWM2B>
 
-		// Reportar posición reproducida (1-based para Adafruit)
-		writeString("P:");
+		writeString("P:");						     //Enviar por UART la posición reproducida
  5b2:	80 e0       	ldi	r24, 0x00	; 0
  5b4:	91 e0       	ldi	r25, 0x01	; 1
  5b6:	0e 94 06 05 	call	0xa0c	; 0xa0c <writeString>
@@ -899,7 +898,7 @@ void ModoEEPROM(){
  5c6:	91 e0       	ldi	r25, 0x01	; 1
  5c8:	0e 94 06 05 	call	0xa0c	; 0xa0c <writeString>
 
-		eeprom_read_idx = (eeprom_read_idx + 1) % eeprom_cantidad;
+		eeprom_read_idx = (eeprom_read_idx + 1) % eeprom_cantidad; //Actualizar índice de lectura en forma circular
  5cc:	80 91 12 01 	lds	r24, 0x0112	; 0x800112 <eeprom_read_idx>
  5d0:	90 e0       	ldi	r25, 0x00	; 0
  5d2:	01 96       	adiw	r24, 0x01	; 1
@@ -907,7 +906,7 @@ void ModoEEPROM(){
  5d8:	70 e0       	ldi	r23, 0x00	; 0
  5da:	0e 94 82 05 	call	0xb04	; 0xb04 <__divmodhi4>
  5de:	80 93 12 01 	sts	0x0112, r24	; 0x800112 <eeprom_read_idx>
-		writeEEPROM(0x02, eeprom_read_idx);
+		writeEEPROM(0x02, eeprom_read_idx);						   //Guardar nuevo índice de lectura en EEPROM
  5e2:	68 2f       	mov	r22, r24
  5e4:	82 e0       	ldi	r24, 0x02	; 2
  5e6:	90 e0       	ldi	r25, 0x00	; 0
@@ -1040,16 +1039,16 @@ void ModoUART();
 /****************************************/
 // Main Function
 int main(void){
-	cli();
+	cli();								//Deshabilitar interrupciones globales
  6cc:	f8 94       	cli
 	setup();
  6ce:	0e 94 53 01 	call	0x2a6	; 0x2a6 <setup>
-	sei();
+	sei();								//Habilitar interrupciones globales
  6d2:	78 94       	sei
     while (1){
-		ProcesarUART();
+		ProcesarUART();					//Ejecutar función que procesa UART
  6d4:	0e 94 19 02 	call	0x432	; 0x432 <ProcesarUART>
-		ModoManual();
+		ModoManual();					//Ejecutar funciones de modos
  6d8:	0e 94 71 02 	call	0x4e2	; 0x4e2 <ModoManual>
 		ModoEEPROM();
  6dc:	0e 94 94 02 	call	0x528	; 0x528 <ModoEEPROM>
@@ -1629,7 +1628,7 @@ void writeInt(uint8_t val){
  a3a:	cd b7       	in	r28, 0x3d	; 61
  a3c:	de b7       	in	r29, 0x3e	; 62
 	char buf[4];
-	buf[0] = '0' + (val / 100);
+	buf[0] = '0' + ( val / 100);
  a3e:	99 e2       	ldi	r25, 0x29	; 41
  a40:	89 9f       	mul	r24, r25
  a42:	91 2d       	mov	r25, r1
@@ -1654,7 +1653,7 @@ void writeInt(uint8_t val){
  a66:	26 95       	lsr	r18
  a68:	20 5d       	subi	r18, 0xD0	; 208
  a6a:	2a 83       	std	Y+2, r18	; 0x02
-	buf[2] = '0' + (val % 10);
+	buf[2] = '0' + ( val % 10);
  a6c:	89 9f       	mul	r24, r25
  a6e:	91 2d       	mov	r25, r1
  a70:	11 24       	eor	r1, r1

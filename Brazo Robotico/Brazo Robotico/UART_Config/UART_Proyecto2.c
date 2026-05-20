@@ -4,12 +4,12 @@
 
 #include "UART_Proyecto2.h"
 
-volatile uint8_t LecturaSerial = 0;
+volatile uint8_t LecturaSerial = 0; //Variable global volátil para almacenar el último dato recibido por UART
 
-volatile char bufferUART[8];
-volatile uint8_t idx = 0;
-volatile uint8_t datoListo = 0;
-volatile uint8_t servoListo = 0;
+volatile char bufferUART[8];		//Buffer para almacenar la cadena recibida por UART
+volatile uint8_t idx = 0;			//Índice de almacenamiento dentro del buffer
+volatile uint8_t datoListo = 0;		//Bandera que indica que se recibió el comando de botones
+volatile uint8_t servoListo = 0;	//Bandera que indica que se recibió el comando de servos
 
 void initUART(){
 	DDRD   &= ~(1<<DDD0);						 //D0->Rx
@@ -34,25 +34,26 @@ void writeString(char* string){
 
 //Enviar numeros
 void writeInt(uint8_t val){
-	char buf[4];
-	buf[0] = '0' + ( val / 100);
+	char buf[4];					 //Buffer local para almacenar el número convertido en texto
+	buf[0] = '0' + ( val / 100);	 //Obtener centena, decena, unidad y convertir a carácter ASCII
 	buf[1] = '0' + ((val % 100) / 10);
 	buf[2] = '0' + ( val % 10);
-	buf[3] = '\0';
-	writeString(buf);
+	buf[3] = '\0';					 //Agregar para cadena
+	writeString(buf);				 //Enviar número convertido como cadena
+
 }
 
 ISR(USART_RX_vect){
-    uint8_t c = UDR0;
+    uint8_t c = UDR0;				//Leer carácter recibido desde el registro UART
     LecturaSerial = c;
-    if(c == '\n'){
-	    bufferUART[idx] = '\0';
-	    datoListo = 1;
-	    idx = 0;
+    if(c == '\n'){					//Verificar si el carácter recibido es salto de línea
+	    bufferUART[idx] = '\0';		//Finalizar cadena con carácter nulo
+	    datoListo = 1;				//Indicar que el dato completo está listo
+	    idx = 0;					//Reiniciar índice del buffer
 	    } 
 	else {
-	    if(idx < 7){
-		    bufferUART[idx++] = c;
+	    if(idx < 7){				//Verificar que aún exista espacio en el buffer
+		    bufferUART[idx++] = c;  //Guardar carácter recibido en el buffer e ir incrementando el índice
 	    }
     }
  }
