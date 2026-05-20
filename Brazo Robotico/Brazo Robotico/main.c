@@ -63,7 +63,7 @@ void setup(){
 	initTimer1(PWM_FAST,PWM_PRESCALER_8, 2499);		 //20ms / 50Hz
 	initPWM1A (PWM_NO_INVERTIDO);
 	initPWM1B (PWM_NO_INVERTIDO);
-	//Inicializar Timer2: PWM PB3 y PD3				//16.67ms / 60Hz
+	//Inicializar Timer2: PWM PB3 y PD3				//16.38ms / 61Hz
 	initTimer2(PWM_FAST, PWM_PRESCALER_64);
 	initPWM2A (PWM_NO_INVERTIDO);
 	initPWM2B (PWM_NO_INVERTIDO);

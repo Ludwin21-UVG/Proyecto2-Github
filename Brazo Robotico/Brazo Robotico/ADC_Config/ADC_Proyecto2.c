@@ -17,17 +17,17 @@ volatile uint8_t LecturaADC7	 = 0;
 void initADC(uint8_t Referencia, uint8_t Justificacion, uint8_t Prescaler){
 	ADMUX  = 0;
 	ADCSRA = 0;
-	// Referencia
+	//Referencia
 	switch(Referencia){
 		case ADC_REF_AREF:									break;
 		case ADC_REF_AVCC:  ADMUX |=			(1<<REFS0);	break;
 		case ADC_REF_1V1:   ADMUX |= (1<<REFS1)|(1<<REFS0); break;
 	}
-	// Justificación
+	//Justificación
 	if(Justificacion == ADC_LEFT){
 		ADMUX |= (1<<ADLAR);
 	}
-	// Prescaler
+	//Prescaler
 	switch(Prescaler){
 		case ADC_PRESCALER_2:   ADCSRA |=						(1<<ADPS0);	break;
 		case ADC_PRESCALER_4:   ADCSRA |=			 (1<<ADPS1);			break;
@@ -37,9 +37,9 @@ void initADC(uint8_t Referencia, uint8_t Justificacion, uint8_t Prescaler){
 		case ADC_PRESCALER_64:  ADCSRA |= (1<<ADPS2)|(1<<ADPS1);			break;
 		case ADC_PRESCALER_128: ADCSRA |= (1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0); break;
 	}
-	// Habilitar ADC
+	//Habilitar ADC
 	ADCSRA |= (1<<ADEN);
-	// Interrupción
+	//Interrupción
 	ADCSRA |= (1<<ADIE);
 }
 
@@ -57,7 +57,7 @@ ISR(ADC_vect){
 	else if(CanalADC == ADC_CH6) {LecturaADC6 = ADCH;}
 	else if(CanalADC == ADC_CH7) {LecturaADC7 = ADCH;}
 
-	// Buscar siguiente canal válido según máscara
+	//Buscar siguiente canal válido según máscara
 	do{
 		CanalADC++;
 		if(CanalADC > 7){
@@ -65,9 +65,9 @@ ISR(ADC_vect){
 	}
 	while(!(Config_Mask_ADC & (1<<CanalADC)));
 
-	// Cambiar canal
+	//Cambiar canal
 	ADMUX = (ADMUX & 0xF0) | CanalADC;
 
-	// Siguiente conversión
+	//Siguiente conversión
 	ADCSRA |= (1<<ADSC);
 }
