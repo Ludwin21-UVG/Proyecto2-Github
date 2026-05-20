@@ -5,7 +5,7 @@ from Adafruit_IO import MQTTClient
 from Adafruit_IO import Client, Feed
 
 ADAFRUIT_IO_USERNAME = "Ludwin21"
-ADAFRUIT_IO_KEY = "aio_sbHw60ohBFLnSOti9juplLoJv9r8"
+ADAFRUIT_IO_KEY = "borrado para fines de privacidad"
 
 # Feeds
 FEED_BotonManual         = "botonmanual"
